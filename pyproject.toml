@@ -15,12 +15,14 @@ alembic = "^1.5.7"
 psycopg2-binary = "^2.8.6"
 pydantic = {extras = ["email"], version = "^1.8.1"}
 python-multipart = "^0.0.5"
+fastapi-mail = "^0.3.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 pylint = "^2.7.2"
 pytest-cov = "^2.11.1"
 pytest-html = "^3.1.1"
+autopep8 = "^1.5.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

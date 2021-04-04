@@ -1,2 +1,12 @@
-from .token import Token, TokenPayload
-from .user import User, UserCreate, UserInDB, UserUpdate, Gender
+from .token import (
+    Token,
+    TokenPayload,
+    EmailAuthenticationTokenPayload
+)
+from .user import (
+    User,
+    UserCreate,
+    UserInDB,
+    UserUpdate,
+    Gender
+)

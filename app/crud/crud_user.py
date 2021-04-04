@@ -41,8 +41,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     ) -> User:
         update_data = obj_in.dict(exclude_unset=True)
 
-        if (hashed_password := update_data.get("password")):
-            update_data["hashed_password"] = hashed_password
+        if (password := update_data.get("password")):
+            update_data["hashed_password"] = get_password_hash(password)
             del update_data["password"]
 
         return super().update(db, db_obj=db_obj, obj_in=update_data)

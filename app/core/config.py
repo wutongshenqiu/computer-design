@@ -1,7 +1,18 @@
 import secrets
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from pydantic import (
+    AnyHttpUrl,
+    BaseSettings,
+    PostgresDsn,
+    validator,
+    EmailStr
+)
+
+from fastapi_mail import (
+    FastMail,
+    ConnectionConfig
+)
 
 
 # pylint: disable=E0213, C0103
@@ -16,8 +27,6 @@ class Settings(BaseSettings):
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-
-    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 1
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -47,10 +56,35 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
+    MAIL_ENABLE: bool
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: EmailStr
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_FROM_NAME: EmailStr
+    MAIL_TLS: bool
+    MAIL_SSL: bool
+    MAIL_AUTHENTICATION_TOKEN_EXPIRE_MINUTES: int = 60
+
     USERS_OPEN_REGISTRATION: bool = True
-    
+
     class Config:
         case_sensitive = True
 
 
 settings = Settings()
+
+if settings.MAIL_ENABLE:
+    mail_manager = FastMail(
+        ConnectionConfig(
+            MAIL_USERNAME=settings.MAIL_USERNAME,
+            MAIL_PASSWORD=settings.MAIL_PASSWORD,
+            MAIL_FROM=settings.MAIL_FROM,
+            MAIL_PORT=settings.MAIL_PORT,
+            MAIL_SERVER=settings.MAIL_SERVER,
+            MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
+            MAIL_TLS=settings.MAIL_TLS,
+            MAIL_SSL=settings.MAIL_SSL
+        )
+    )

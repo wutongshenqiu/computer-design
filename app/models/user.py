@@ -1,4 +1,11 @@
-from sqlalchemy import Boolean, Column, Integer, String, SMALLINT, TIMESTAMP
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Integer,
+    String,
+    SMALLINT,
+    TIMESTAMP,
+)
 
 from app.db.base_class import Base
 

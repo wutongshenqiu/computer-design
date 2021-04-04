@@ -1,4 +1,5 @@
 from typing import Any
+import re
 
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 
@@ -10,4 +11,4 @@ class Base:
 
     @declared_attr
     def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+        return '_'.join(map(str.lower, re.findall("[A-Z][^A-Z]*", cls.__name__)))

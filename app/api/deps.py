@@ -39,7 +39,7 @@ def get_current_user(
             detail="Could not validate credentials",
         ) from errs
 
-    user = crud.user.get(db, id=token_data.sub)
+    user = crud.user.get(db, id_=token_data.sub)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -63,8 +63,6 @@ def get_current_active_superuser(
     return current_user
 
 
-# TODO
-# 先不管效率的问题
 def check_email_exists(
     db: Session = Depends(get_db), email: EmailStr = Body(...)
 ) -> EmailStr:
