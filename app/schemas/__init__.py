@@ -10,3 +10,10 @@ from .user import (
     UserUpdate,
     Gender
 )
+
+from .address_book import (
+    AddressBook,
+    AddressBookCreate,
+    AddressBookInDB,
+    AddressBookUpdate
+)

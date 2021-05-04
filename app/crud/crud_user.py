@@ -15,10 +15,10 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     def get_by_identifier(self, db: Session, *, identifier: str) -> Optional[User]:
         return db.query(User).filter(
-                (User.email == identifier) |
-                (User.phone_number == identifier) |
-                (User.id_card_number == identifier)
-            ).first()
+            (User.email == identifier) |
+            (User.phone_number == identifier) |
+            (User.id_card_number == identifier)
+        ).first()
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
@@ -33,7 +33,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         obj_in_dict = jsonable_encoder(obj_in)
         obj_in_dict["hashed_password"] = get_password_hash(obj_in.password)
         db_obj = UserInDB(**obj_in_dict)
-        
+
         return super().create(db, obj_in=db_obj)
 
     def update(

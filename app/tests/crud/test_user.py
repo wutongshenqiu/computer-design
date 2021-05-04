@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.tests.utils.utils import (
+from app.tests.utils import (
     random_email,
     random_lower_string,
     random_datetime,
     random_phone_number,
 )
-from app.tests.utils.user import prepare_random_user
+from app.tests.utils import prepare_random_user
 
 
 def test_create_user(db: Session) -> None:

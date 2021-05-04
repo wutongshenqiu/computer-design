@@ -4,8 +4,9 @@ from sqlalchemy import (
     Integer,
     String,
     SMALLINT,
-    TIMESTAMP,
+    TIMESTAMP
 )
+from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
 
@@ -29,3 +30,7 @@ class User(Base):
     is_email_activated = Column(Boolean(), default=False)
     is_face_activated = Column(Boolean(), default=False)
     is_superuser = Column(Boolean(), default=False)
+
+    address_books = relationship(
+        "AddressBook", back_populates="user", foreign_keys="AddressBook.user_id"
+    )

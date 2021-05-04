@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from app.schemas import UserCreate, Gender
 
@@ -53,3 +53,9 @@ def prepare_random_user(
         is_email_activated=is_email_activated,
         is_face_activated=is_face_activated
     )
+
+
+def prepare_many_random_users(quantity: int) -> List[UserCreate]:
+    return [
+        prepare_random_user() for _ in range(quantity)
+    ]
