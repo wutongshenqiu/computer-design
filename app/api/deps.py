@@ -72,7 +72,7 @@ def check_email_exists(
             status_code=400,
             detail={
                 "type": "email",
-                "msg": "The user with this phone number already exists in the system"
+                "msg": "The user with this email already exists in the system"
             }
         )
 

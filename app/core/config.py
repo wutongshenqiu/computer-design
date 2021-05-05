@@ -5,6 +5,7 @@ from pydantic import (
     AnyHttpUrl,
     BaseSettings,
     PostgresDsn,
+    RedisDsn,
     validator,
     EmailStr
 )
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: List[Union[AnyHttpUrl, str]] = ['*']
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -54,6 +55,22 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_SERVER"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+
+    REDIS_SERVER: str
+    REDIS_USER: Optional[str]
+    REDIS_PASSWORD: Optional[str]
+    AIOREDIS_URI: Optional[RedisDsn] = None
+
+    @validator("AIOREDIS_URI", pre=True)
+    def assemble_redis_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        if isinstance(v, str):
+            return v
+        return RedisDsn.build(
+            scheme="redis",
+            user=values.get("REDIS_USER"),
+            password=values.get("REDIS_PASSWORD"),
+            host=values.get("REDIS_SERVER")
         )
 
     MAIL_ENABLE: bool

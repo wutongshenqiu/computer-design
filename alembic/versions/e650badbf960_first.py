@@ -1,8 +1,8 @@
-"""add address book model
+"""first
 
-Revision ID: 58724f50974c
+Revision ID: e650badbf960
 Revises: 
-Create Date: 2021-04-05 18:41:10.175080
+Create Date: 2021-05-05 13:22:37.655722
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '58724f50974c'
+revision = 'e650badbf960'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('birth_date', sa.TIMESTAMP(), nullable=True),
     sa.Column('ancestral_home', sa.String(), nullable=True),
     sa.Column('political_status', sa.String(), nullable=True),
-    sa.Column('phone_number', sa.String(), nullable=False),
+    sa.Column('phone_number', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('id_card_number', sa.String(), nullable=True),
     sa.Column('hashed_password', sa.String(), nullable=False),

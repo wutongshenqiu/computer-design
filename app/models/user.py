@@ -19,7 +19,7 @@ class User(Base):
     birth_date = Column(TIMESTAMP)
     ancestral_home = Column(String)
     political_status = Column(String)
-    phone_number = Column(String, unique=True, index=True, nullable=False)
+    phone_number = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     id_card_number = Column(String, unique=True, index=True)
     hashed_password = Column(String, nullable=False)

@@ -65,7 +65,7 @@ def update_user_me(
 @router.get("/me", response_model=schemas.User)
 def read_user_me(
     db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_current_user ),
 ) -> Any:
     """
     Get current user.
@@ -78,10 +78,7 @@ def create_user_open(
     *,
     db: Session = Depends(deps.get_db),
     name: str = Body(...),
-    gender: schemas.Gender = Body(...),
-    birth_date: datetime = Body(...),
     email: EmailStr = Depends(deps.check_email_exists),
-    phone_number: str = Depends(deps.check_phone_number_exists),
     password: str = Body(...)
 ) -> Any:
     """
@@ -95,11 +92,8 @@ def create_user_open(
 
     user_in = schemas.UserCreate(
         name=name,
-        gender=gender,
-        birth_date=birth_date,
         password=password,
         email=email,
-        phone_number=phone_number
     )
     user = crud.user.create(db, obj_in=user_in)
 
