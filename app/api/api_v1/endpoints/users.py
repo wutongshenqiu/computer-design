@@ -47,7 +47,7 @@ def update_user_me(
     db: Session = Depends(deps.get_db),
     name: Optional[str] = Form(None),
     personal_signature: Optional[str] = Form(None),
-    password: Optional[str] = Body(None),
+    password: Optional[str] = Form(None),
     avatar: Optional[UploadFile] = Depends(deps.check_is_image),
     current_user: models.User = Depends(deps.get_current_user)
 ) -> Any:

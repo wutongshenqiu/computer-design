@@ -84,3 +84,60 @@ def test_get_many_address_books(db: Session) -> None:
         db, user_id=user.id, offset=20, limit=30
     )
     assert address_books == user.address_books
+
+
+def test_get_all_friend_id(db: Session) -> None:
+    user = crud.user.create(db, obj_in=prepare_random_user())
+    friends = [
+        crud.user.create(db, obj_in=friend) for friend in prepare_many_random_users(50)
+    ]
+    address_books = [
+        crud.address_book.create(
+            db, obj_in=prepare_address_book(user, friend)
+        )
+        for friend in friends
+    ]
+
+    all_friends = [
+        friend.friend_id for friend in address_books
+    ]
+    assert all_friends == crud.address_book.get_all_fridend_id(
+        db, user_id=user.id, limit=50
+    )
+    assert all_friends[:20] == crud.address_book.get_all_fridend_id(
+        db, user_id=user.id
+    )
+    assert all_friends[20:] == crud.address_book.get_all_fridend_id(
+        db, user_id=user.id, offset=20, limit=30
+    )
+
+
+def test_get_no_friend(db: Session) -> None:
+    user = crud.user.create(db, obj_in=prepare_random_user())
+
+    assert crud.address_book.get_all_fridend_id(
+        db, user_id=user.id
+    ) == []
+    assert crud.address_book.get_by_user_id(
+        db, user_id=user.id
+    ) == []
+
+
+def test_remove_friend(db: Session) -> None:
+    user1 = crud.user.create(db, obj_in=prepare_random_user())
+    user2 = crud.user.create(db, obj_in=prepare_random_user())
+
+    address_book = crud.address_book.create(
+        db, obj_in=prepare_address_book(user1, user2)
+    )
+    removed_address_book = crud.address_book.remove_friend(
+        db, user_id=user1.id, friend_id=user2.id
+    )
+
+    assert address_book == removed_address_book
+    assert crud.address_book.get_all_fridend_id(
+        db, user_id=user1.id
+    ) == []
+    assert crud.address_book.get_by_user_id(
+        db, user_id=user1.id
+    ) == []
