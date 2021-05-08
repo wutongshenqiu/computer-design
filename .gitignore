@@ -3,4 +3,5 @@ htmlcov/
 .coverage
 .pytest_cache/
 .vscode/
+dump.rdb
 __pycache__/

@@ -14,6 +14,7 @@ class Gender(IntEnum):
 # Shared properties
 class UserBase(BaseModel):
     name: Optional[str] = None
+    personal_signature: Optional[str] = None
     gender: Optional[Gender] = None
     birth_date: Optional[datetime] = None
     ancestral_home: Optional[str] = None
@@ -24,6 +25,8 @@ class UserBase(BaseModel):
     is_superuser: Optional[bool] = False
     is_email_activated: Optional[bool] = False
     is_face_activated: Optional[bool] = False
+
+    avatar_path: Optional[str] = None
 
 
 # Properties to receive via API on creation

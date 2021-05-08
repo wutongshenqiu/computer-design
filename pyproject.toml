@@ -18,6 +18,8 @@ python-multipart = "^0.0.5"
 fastapi-mail = "^0.3.5"
 pytest-asyncio = "^0.15.1"
 aioredis = "2.0.0a1"
+Pillow = "^8.2.0"
+aiofiles = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

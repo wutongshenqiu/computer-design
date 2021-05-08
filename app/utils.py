@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, Union
 import asyncio
+from pathlib import Path, PurePath
 
 from pydantic import EmailStr
+
+from PIL import Image
 
 from app.core.config import settings
 
@@ -41,3 +44,12 @@ def send_mail_authentication_email(
         subject="mail authentication",
         body=body,
     )
+
+
+def remove_file(path: Union[str, Path, PurePath]) -> None:
+    if isinstance(path, (str, PurePath)):
+        path = Path(path)
+    else:
+        raise ValueError("path must be `str` or `PurePath` or `Path`")
+    if path.exists(): 
+        path.unlink()

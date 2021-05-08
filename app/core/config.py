@@ -1,5 +1,6 @@
 import secrets
 from typing import Any, Dict, List, Optional, Union
+from pathlib import PurePath
 
 from pydantic import (
     AnyHttpUrl,
@@ -18,6 +19,12 @@ from fastapi_mail import (
 
 # pylint: disable=E0213, C0103
 class Settings(BaseSettings):
+    # important path
+    project_dir: PurePath = PurePath(__file__).parent.parent.parent
+    media_dir: PurePath = project_dir / "media"
+    avatar_height: int = 50
+    avatar_width: int = 50
+
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days

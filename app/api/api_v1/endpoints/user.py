@@ -1,14 +1,27 @@
-from typing import Any, List
-from datetime import datetime
+from typing import Any, List, Optional
+from pathlib import Path
+import mimetypes
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import (
+    APIRouter,
+    Body,
+    Form,
+    UploadFile,
+    Depends,
+    HTTPException
+)
 from fastapi.encoders import jsonable_encoder
+
 from pydantic.networks import EmailStr
+
 from sqlalchemy.orm import Session
+
+from PIL import Image
 
 from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
+from app.utils import remove_file
 
 router = APIRouter()
 
@@ -32,30 +45,37 @@ def read_users(
 def update_user_me(
     *,
     db: Session = Depends(deps.get_db),
-    password: str = Body(None),
-    gender: schemas.Gender = Body(None),
-    birth_date: datetime = Body(None),
-    ancestral_home: str = Body(None),
-    political_status: str = Body(None),
-    current_user: models.User = Depends(deps.get_current_active_user),
+    name: Optional[str] = Form(None),
+    personal_signature: Optional[str] = Form(None),
+    password: Optional[str] = Body(None),
+    avatar: Optional[UploadFile] = Depends(deps.check_is_image),
+    current_user: models.User = Depends(deps.get_current_user)
 ) -> Any:
     """
     Update own user.
     """
     current_user_data = jsonable_encoder(current_user)
     user_in = schemas.UserUpdate(**current_user_data)
-    # TODO
-    # so ugly
+
+    if name is not None:
+        user_in.name = name
     if password is not None:
         user_in.password = password
-    if gender is not None:
-        user_in.gender = gender
-    if birth_date is not None:
-        user_in.birth_date = birth_date
-    if ancestral_home is not None:
-        user_in.ancestral_home = ancestral_home
-    if political_status is not None:
-        user_in.political_status = political_status
+    if personal_signature is not None:
+        user_in.personal_signature = personal_signature
+    if avatar is not None:
+        if current_user.avatar_path:
+            remove_file(settings.project_dir / current_user.avatar_path)
+
+        resized_image = Image.open(avatar.file).resize(
+            (settings.avatar_width, settings.avatar_height)
+        )
+        avatar_path = Path(settings.media_dir) / f"{current_user.id}" / \
+            f"avatar{mimetypes.guess_extension(avatar.content_type)}"
+        if not avatar_path.parent.exists():
+            avatar_path.parent.mkdir()
+        resized_image.save(avatar_path)
+        user_in.avatar_path = str(avatar_path)
 
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
 
@@ -65,7 +85,7 @@ def update_user_me(
 @router.get("/me", response_model=schemas.User)
 def read_user_me(
     db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_current_user ),
+    current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Get current user.

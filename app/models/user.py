@@ -14,6 +14,7 @@ from app.db.base_class import Base
 class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    personal_signature = Column(String)
     # 0 for male, 1 for famale, 2 for not clear?
     gender = Column(SMALLINT)
     birth_date = Column(TIMESTAMP)
@@ -33,4 +34,8 @@ class User(Base):
 
     address_books = relationship(
         "AddressBook", back_populates="user", foreign_keys="AddressBook.user_id"
+    )
+
+    meetings = relationship(
+        "Meeting", back_populates="owner", foreign_keys="Meeting.owner_id"
     )

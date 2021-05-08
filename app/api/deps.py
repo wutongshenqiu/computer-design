@@ -1,9 +1,19 @@
-from typing import Generator
+from typing import Generator, Optional
 
-from fastapi import Depends, HTTPException, status, Body
+from fastapi import (
+    Depends,
+    HTTPException,
+    status,
+    Body,
+    File,
+    UploadFile
+)
 from fastapi.security import OAuth2PasswordBearer
+
 from jose import jwt
+
 from pydantic import ValidationError, EmailStr
+
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
@@ -93,3 +103,22 @@ def check_phone_number_exists(
         )
 
     return phone_number
+
+
+def check_is_image(image: Optional[UploadFile] = File(None)) -> Optional[UploadFile]:
+    if image is None:
+        return None
+    if image.content_type not in {
+        "image/gif",
+        "image/jpeg",
+        "image/png"
+    }:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "type": "image",
+                "msg": "Only gif, jpg and png are supported"
+            }
+        )
+
+    return image
