@@ -93,6 +93,9 @@ class Settings(BaseSettings):
 
     USERS_OPEN_REGISTRATION: bool = True
 
+    MAX_MEETING_DURATION: int
+    MAX_MEETING_AMOUNT: int
+
     class Config:
         case_sensitive = True
 

@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from sqlalchemy.orm.session import Session
+from sqlalchemy import func as sql_func
 
 from fastapi.encoders import jsonable_encoder
 
@@ -36,8 +37,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             db.query(User).with_entities(
                 User.id, User.name, User.personal_signature, User.is_email_activated
             ).filter(
-                User.name.contains(identifier) |
-                User.email.contains(identifier)
+                sql_func.lower(User.name).contains(identifier.lower(), autoescape=True) |
+                sql_func.lower(User.email).contains(identifier.lower(), autoescape=True)
             ).limit(limit).offset(offset).all()
         ]
 
@@ -62,7 +63,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     ) -> User:
         update_data = obj_in.dict(exclude_unset=True)
 
-        if (password := update_data.get("password")):
+        if password := update_data.get("password"):
             update_data["hashed_password"] = get_password_hash(password)
             del update_data["password"]
 

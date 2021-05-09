@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Generator, Optional, AsyncIterator
 
 from fastapi import (
     Depends,
@@ -16,6 +16,9 @@ from pydantic import ValidationError, EmailStr
 
 from sqlalchemy.orm import Session
 
+import aioredis
+from aioredis import Redis
+
 from app import crud, models, schemas
 from app.core import security
 from app.core.config import settings
@@ -32,6 +35,14 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+
+async def get_redis_db() -> AsyncIterator[Redis]:
+    try:
+        redis_db = aioredis.from_url(settings.AIOREDIS_URI, decode_responses=True)
+        yield redis_db
+    finally:
+        await redis_db.close()
 
 
 def get_current_user(
@@ -122,3 +133,19 @@ def check_is_image(image: Optional[UploadFile] = File(None)) -> Optional[UploadF
         )
 
     return image
+
+
+async def check_meeting_exists(
+    redis_db: Redis = Depends(get_redis_db),
+    meeting_id: str = Body(...)
+) -> str:
+    if await redis_db.hlen(meeting_id) == 0:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "type": "meeting_id",
+                "msg": "Meeting doesn't exist"
+            }
+        )
+
+    return meeting_id

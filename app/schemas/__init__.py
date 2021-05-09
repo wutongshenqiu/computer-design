@@ -18,3 +18,10 @@ from .address_book import (
     AddressBookInDB,
     AddressBookUpdate
 )
+
+from .meeting import (
+    Meeting,
+    MeetingCreate,
+    MeetingInDB,
+    MeetingType
+)

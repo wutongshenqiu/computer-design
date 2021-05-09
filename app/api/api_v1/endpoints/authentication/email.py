@@ -51,7 +51,6 @@ def create_mail_authentication_token(
         email_to=current_user.email,
         token=verification_code
     )
-    print(f"verification_code: {verification_code}")
 
     return JSONResponse(
         content="email has already been send, please check your mailbox"
