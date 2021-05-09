@@ -11,6 +11,13 @@ class Gender(IntEnum):
     UNCLEAR = 2
 
 
+# for search address book, every user can access this
+class UserSearch(BaseModel):
+    name: Optional[str]
+    personal_signature: Optional[str]
+    is_email_activated: bool
+
+
 # Shared properties
 class UserBase(BaseModel):
     name: Optional[str] = None

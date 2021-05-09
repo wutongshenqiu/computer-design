@@ -25,7 +25,7 @@ class AddressBookInDBBase(AddressBookBase):
         orm_mode = True
 
 
-class AddressBook(AddressBookBase):
+class AddressBook(AddressBookInDBBase):
     pass
 
 

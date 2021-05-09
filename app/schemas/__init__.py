@@ -8,7 +8,8 @@ from .user import (
     UserCreate,
     UserInDB,
     UserUpdate,
-    Gender
+    Gender,
+    UserSearch
 )
 
 from .address_book import (

@@ -1,6 +1,6 @@
-from typing import List, Any
+from typing import List, Any, Optional
 
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends, Body, HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,7 @@ from app import crud, schemas
 router = APIRouter()
 
 
-@router.get("/me", response_model=List[int])
+@router.post("/me", response_model=List[int])
 def read_address_books_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -33,6 +33,27 @@ def create_address_book(
     friend_id: int = Body(...),
     current_user: schemas.User = Depends(deps.get_current_user)
 ) -> Any:
+    if friend_id == current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "type": "friend_id",
+                "msg": "Can not add yourself as a friend"
+            }
+        )
+    if crud.address_book.check_friend_exist(
+        db,
+        user_id=current_user.id,
+        friend_id=friend_id
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "type": "friend_id",
+                "msg": f"Already add {friend_id} as a friend"
+            }
+        )
+
     address_book_in = schemas.AddressBookCreate(
         user_id=current_user.id,
         friend_id=friend_id
@@ -42,7 +63,7 @@ def create_address_book(
     return address_book
 
 
-@router.post("/delete", response_model=schemas.AddressBook)
+@router.post("/delete", response_model=Optional[schemas.AddressBook])
 def delete_address_book(
     *,
     db: Session = Depends(deps.get_db),

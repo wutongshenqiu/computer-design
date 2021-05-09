@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -30,14 +30,28 @@ class CRUDAddressBook(CRUDBase[AddressBook, AddressBookCreate, AddressBookUpdate
             ).limit(limit).offset(offset).all()
         ]
 
-    def remove_friend(self, db: Session, *,
-                      user_id: int,
-                      friend_id: int
-                      ) -> AddressBook:
+    def check_friend_exist(self, db: Session, *,
+                           user_id: int,
+                           friend_id: int
+                           ) -> bool:
         obj = db.query(AddressBook).filter(
             (AddressBook.user_id == user_id) &
             (AddressBook.friend_id == friend_id)
         ).first()
+
+        return obj is not None
+
+    def remove_friend(self, db: Session, *,
+                      user_id: int,
+                      friend_id: int
+                      ) -> Optional[AddressBook]:
+        obj = db.query(AddressBook).filter(
+            (AddressBook.user_id == user_id) &
+            (AddressBook.friend_id == friend_id)
+        ).first()
+
+        if obj is None:
+            return None
 
         db.delete(obj)
         db.commit()

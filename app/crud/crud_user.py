@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.orm.session import Session
 
@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 
 from app.crud.base import CRUDBase
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserInDB
+from app.schemas.user import UserCreate, UserUpdate, UserInDB, UserSearch
 from app.core.security import get_password_hash, verify_password
 
 
@@ -19,6 +19,21 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             (User.phone_number == identifier) |
             (User.id_card_number == identifier)
         ).first()
+
+    # FIXME
+    # elastic search
+    def elastic_search(self, db: Session, *,
+                       identifier: str) -> List[UserSearch]:
+        return [
+            UserSearch(*user_info) for user_info in
+            db.query(User).with_entities(
+                User.name, User.personal_signature, User.is_email_activated
+            ).filter(
+                (User.name == identifier) |
+                (User.phone_number == identifier) |
+                (User.email == identifier)
+            ).all()
+        ]
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
