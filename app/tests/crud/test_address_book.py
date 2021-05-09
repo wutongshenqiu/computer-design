@@ -141,3 +141,23 @@ def test_remove_friend(db: Session) -> None:
     assert crud.address_book.get_by_user_id(
         db, user_id=user1.id
     ) == []
+
+
+def test_check_is_friend(db: Session) -> None:
+    user1 = crud.user.create(db, obj_in=prepare_random_user())
+    user2 = crud.user.create(db, obj_in=prepare_random_user())
+
+    address_book = crud.address_book.create(
+        db, obj_in=prepare_address_book(user1, user2)
+    )
+    assert crud.address_book.check_is_friend(
+        db, user_id=user1.id, friend_id=user2.id
+    )
+
+    removed_address_book = crud.address_book.remove_friend(
+        db, user_id=user1.id, friend_id=user2.id
+    )
+    assert address_book == removed_address_book
+    assert not crud.address_book.check_is_friend(
+        db, user_id=user1.id, friend_id=user2.id
+    )

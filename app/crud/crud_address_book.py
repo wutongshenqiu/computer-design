@@ -30,10 +30,10 @@ class CRUDAddressBook(CRUDBase[AddressBook, AddressBookCreate, AddressBookUpdate
             ).limit(limit).offset(offset).all()
         ]
 
-    def check_friend_exist(self, db: Session, *,
-                           user_id: int,
-                           friend_id: int
-                           ) -> bool:
+    def check_is_friend(self, db: Session, *,
+                        user_id: int,
+                        friend_id: int
+                        ) -> bool:
         obj = db.query(AddressBook).filter(
             (AddressBook.user_id == user_id) &
             (AddressBook.friend_id == friend_id)

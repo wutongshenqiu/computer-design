@@ -14,8 +14,8 @@ router = APIRouter()
 def read_address_books_me(
     *,
     db: Session = Depends(deps.get_db),
-    offset: int = Body(...),
-    limit: int = Body(...),
+    offset: int = Body(0),
+    limit: int = Body(20),
     current_user: schemas.User = Depends(deps.get_current_user)
 ) -> Any:
     return crud.address_book.get_all_fridend_id(
@@ -26,11 +26,10 @@ def read_address_books_me(
     )
 
 
-@router.post("/create", response_model=schemas.AddressBook)
+@router.get("/create/{friend_id}", response_model=schemas.AddressBook)
 def create_address_book(
-    *,
+    friend_id: int,
     db: Session = Depends(deps.get_db),
-    friend_id: int = Body(...),
     current_user: schemas.User = Depends(deps.get_current_user)
 ) -> Any:
     if friend_id == current_user.id:
@@ -41,7 +40,7 @@ def create_address_book(
                 "msg": "Can not add yourself as a friend"
             }
         )
-    if crud.address_book.check_friend_exist(
+    if crud.address_book.check_is_friend(
         db,
         user_id=current_user.id,
         friend_id=friend_id
@@ -63,11 +62,10 @@ def create_address_book(
     return address_book
 
 
-@router.post("/delete", response_model=Optional[schemas.AddressBook])
+@router.get("/delete/{friend_id}", response_model=Optional[schemas.AddressBook])
 def delete_address_book(
-    *,
+    friend_id: int,
     db: Session = Depends(deps.get_db),
-    friend_id: int = Body(...),
     current_user: schemas.User = Depends(deps.get_current_user)
 ) -> Any:
     return crud.address_book.remove_friend(

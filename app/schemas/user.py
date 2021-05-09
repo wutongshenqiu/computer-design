@@ -13,6 +13,7 @@ class Gender(IntEnum):
 
 # for search address book, every user can access this
 class UserSearch(BaseModel):
+    id: int
     name: Optional[str]
     personal_signature: Optional[str]
     is_email_activated: bool

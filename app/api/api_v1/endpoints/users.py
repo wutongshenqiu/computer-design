@@ -132,7 +132,25 @@ def read_user_by_id(
     user = crud.user.get(db, id_=user_id)
 
     return schemas.UserSearch(
+        id=user.id,
         name=user.name,
         personal_signature=user.personal_signature,
         is_email_activated=user.is_email_activated
+    )
+
+
+@router.post("/elastic_search", response_model=List[schemas.UserSearch])
+def elastic_search_by_identifier(
+    *,
+    db: Session = Depends(deps.get_db),
+    identifier: str = Body(...),
+    offset: int = Body(0),
+    limit: int = Body(20),
+    _current_user=Depends(deps.get_current_user)
+) -> Any:
+    return crud.user.elastic_search(
+        db,
+        identifier=identifier,
+        offset=offset,
+        limit=limit
     )

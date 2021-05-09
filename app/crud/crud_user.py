@@ -21,18 +21,24 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         ).first()
 
     # FIXME
-    # elastic search
+    # enhance elastic search
     def elastic_search(self, db: Session, *,
-                       identifier: str) -> List[UserSearch]:
+                       identifier: str,
+                       offset: int,
+                       limit: int) -> List[UserSearch]:
         return [
-            UserSearch(*user_info) for user_info in
+            UserSearch(
+                id=user_info[0],
+                name=user_info[1],
+                personal_signature=user_info[2],
+                is_email_activated=user_info[3]
+            ) for user_info in
             db.query(User).with_entities(
-                User.name, User.personal_signature, User.is_email_activated
+                User.id, User.name, User.personal_signature, User.is_email_activated
             ).filter(
-                (User.name == identifier) |
-                (User.phone_number == identifier) |
-                (User.email == identifier)
-            ).all()
+                User.name.contains(identifier) |
+                User.email.contains(identifier)
+            ).limit(limit).offset(offset).all()
         ]
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
