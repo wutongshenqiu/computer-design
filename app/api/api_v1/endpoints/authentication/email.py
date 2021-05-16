@@ -57,12 +57,14 @@ def create_mail_authentication_token(
     )
 
 
+# TODO
+# for simplcity, we not acquire user
 @router.get("/verify/{token}")
 def verify_mail_authentication_token(
     *,
     db: Session = Depends(deps.get_db),
     token: str,
-    current_user: models.User = Depends(deps.get_current_user)
+    # current_user: models.User = Depends(deps.get_current_user)
 ) -> Any:
     try:
         payload = jwt.decode(
@@ -76,12 +78,13 @@ def verify_mail_authentication_token(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate email token",
         ) from errs
-    if token_data.sub != current_user.email:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="email token and user are not compatible"
-        )
+    # if token_data.sub != current_user.email:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="email token and user are not compatible"
+    #     )
 
+    current_user = crud.user.get_by_email(db, email=token_data.sub)
     user_in = schemas.UserUpdate(**jsonable_encoder(current_user))
     user_in.is_email_activated = True
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)

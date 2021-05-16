@@ -98,12 +98,12 @@ async def join_meeting(
                 status_code=403,
                 detail={
                     "type": "current_user",
-                    "msg": "Current user are not allowed to join the meeting"
+                    "msg": "Current user is not allowed to join the meeting"
                 }
             )
 
     meeting_obj.participants.add(current_user.id)
-    redis_db.hset(meeting_id, "participants", meeting_obj._optional_set_int_to_str(meeting_obj.participants))
+    await redis_db.hset(meeting_id, "participants", meeting_obj._optional_set_int_to_str(meeting_obj.participants))
 
     return meeting_obj
 
@@ -126,6 +126,7 @@ async def get_share_meetings(
     async for name in redis_db.scan_iter("*"):
         if await _is_share_meeting(name):
             shared_meetings.append(schemas.MeetingCreate.from_redis_dict(await redis_db.hgetall(name)))
+    shared_meetings.sort(key=lambda x : (-len(x.participants), x.creation_time))
 
     return shared_meetings
     
